@@ -178,6 +178,13 @@ def main():
                                  if v[3] == simpletitle]
                         if(found):
                             inmem += 1
+                        else:
+                            # check if postid in list as they may have updated title
+                            found = [i for i, v in enumerate(newposts)
+                                     if v[0] == postid ]
+                            if(found):
+                                inmem += 1
+
                 # If blacklisted OR we've seen before OR it's in db OR its fucked, skip it
                 if blacklisted or found or not(newpost) or not(postid):
                     pass;
@@ -190,6 +197,10 @@ def main():
             # if we have any newposts then insert them
         if newposts:
             # TODO add error checking
+            # n Cases to consider
+            #   1. It's a blacklisted post
+            #   2. It's already been seen and is in memory
+            #   3. It was seen in a prior run and is in the database
             insert_cursor.executemany(insertstmt, newposts)
             astr = "<p></p><p>" \
                 + str(numnewposts) \
